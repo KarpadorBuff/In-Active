@@ -1,4 +1,4 @@
-using Gma.System.MouseKeyHook;
+﻿using Gma.System.MouseKeyHook;
 using System.Diagnostics;
 namespace YeetClicker
 {
@@ -6,7 +6,20 @@ namespace YeetClicker
     {
         private static IKeyboardMouseEvents mouseEvents;
         private static IKeyboardEvents keyboardEvents;
+        private Color[] colors = {Color.FromArgb(230,232,230),
+            Color.FromArgb(206, 208, 206),
+            Color.FromArgb(159, 184, 173),
+            Color.FromArgb(71, 88, 65),
+            Color.FromArgb(80, 81, 80),
+            Color.FromArgb(96, 97, 96)};
+
+
         Button[] shop;
+        private static double Score = 0;
+        private static double ScorePerSecond = 0.001;
+        private static double ScorePerClick = 0.001;
+        private static int shopbuttonamount = 5;
+        private CoffeeBar coffeemachine;
         public Window()
         {
             InitializeComponent();
@@ -17,23 +30,44 @@ namespace YeetClicker
                 Size = new Size(100, 50),
                 BackColor = Color.Beige,
             };
-
-
+            shop[0].Click += BuyCoffee;
             foreach (Button b in shop)
             {
                 if (b != null)
                 {
+                    b.BackColor = colors[3];
                     shopPanel.Controls.Add(b);
                     b.Show();
-
                 }
             }
-        }
-        private static double Score = 0;
-        private static double ScorePerSecond = 0.001;
-        private static double ScorePerClick = 0.001;
-        private static int shopbuttonamount = 5;
 
+
+
+        }
+        private void Window_Load(object sender, EventArgs e)
+        {
+            shopPanel.BackColor = colors[4];
+            coffeemachine = new(this, new Point(shopPanel.Location.X + shopPanel.Width + 5, Height - 30),
+                new Size(Width - shopPanel.Width - 20, 20));
+            Debug.WriteLine(coffeemachine.Size);
+            QuitButton.Location = new Point(shopPanel.Location.X + shopPanel.Width + shopPanel.Location.Y, shopPanel.Location.Y);
+            mouseEvents = Hook.GlobalEvents();
+            keyboardEvents = Hook.GlobalEvents();
+            // Subscribe to mouse events
+            mouseEvents.MouseDown += OnMouseDown;
+            keyboardEvents.KeyUp += OnKeyUp;
+
+            LoadVariables();
+        }
+        private void BuyCoffee(object? sender, EventArgs e)
+        {
+            if (Score >= 0.5)
+            {
+                Score -= 0.5;
+                coffeemachine.Fill(60);
+                timer1s.Enabled = true;
+            }
+        }
         private static void AddScore(double amount)
         {
             Score += amount;
@@ -41,31 +75,13 @@ namespace YeetClicker
 
         private void Game_Tick(object sender, EventArgs e)
         {
-            AddScore(ScorePerSecond *0.001);
+            AddScore(ScorePerSecond * 0.001);
             labelmoney.Text = Score.ToString("C");
+            labelmoney.Location = new Point(Screen.FromControl(this).Bounds.Width / 2 - labelmoney.Width / 2, 20);
         }
 
 
 
-        private void Window_Load(object sender, EventArgs e)
-        {
-            QuitButton.Location = new Point(shopPanel.Location.X + shopPanel.Width + shopPanel.Location.Y, shopPanel.Location.Y);
-            mouseEvents = Hook.GlobalEvents();
-            keyboardEvents = Hook.GlobalEvents();
-            // Subscribe to mouse events
-            mouseEvents.MouseDown += OnMouseDown;
-            mouseEvents.MouseUp += OnMouseUp;
-            mouseEvents.MouseMove += OnMouseMove;
-            keyboardEvents.KeyUp += OnKeyUp;
-
-            labelmoney.Location = new Point(Screen.FromControl(this).Bounds.Width / 2, 20);
-
-
-
-
-
-            LoadVariables();
-        }
         private static void OnKeyUp(object sender, KeyEventArgs e)
         {
             AddScore(ScorePerClick / 2);
@@ -73,14 +89,6 @@ namespace YeetClicker
         private static void OnMouseDown(object sender, MouseEventArgs e)
         {
             AddScore(ScorePerClick);
-        }
-        private static void OnMouseUp(object sender, MouseEventArgs e)
-        {
-            Debug.WriteLine($"Mouse Up: {e.Button}, X={e.X}, Y={e.Y}");
-        }
-        private static void OnMouseMove(object sender, MouseEventArgs e)
-        {
-            Debug.WriteLine($"Mouse Move: X={e.X}, Y={e.Y}");
         }
         private void Window_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -106,6 +114,17 @@ namespace YeetClicker
         {
             SaveVariables();
             Environment.Exit(0);
+        }
+
+        private void timer1s_Tick(object sender, EventArgs e)
+        {
+            if(coffeemachine.FillLevel != 0)
+            {
+                coffeemachine.FillLevel --;
+                coffeemachine.Update();
+
+            }
+            else timer1s.Enabled = false;
         }
     }
 }

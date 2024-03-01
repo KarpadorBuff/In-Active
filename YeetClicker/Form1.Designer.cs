@@ -30,18 +30,19 @@
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
-            moneyTimer = new System.Windows.Forms.Timer(components);
+            scoretimer = new System.Windows.Forms.Timer(components);
             pbBanana = new PictureBox();
             labelmoney = new Label();
             shopPanel = new FlowLayoutPanel();
             QuitButton = new Button();
+            timer1s = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)pbBanana).BeginInit();
             SuspendLayout();
             // 
-            // moneyTimer
+            // scoretimer
             // 
-            moneyTimer.Enabled = true;
-            moneyTimer.Tick += Game_Tick;
+            scoretimer.Enabled = true;
+            scoretimer.Tick += Game_Tick;
             // 
             // pbBanana
             // 
@@ -56,16 +57,17 @@
             // labelmoney
             // 
             labelmoney.AutoSize = true;
-            labelmoney.Font = new Font("Stencil", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelmoney.Font = new Font("Stencil", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            labelmoney.ForeColor = Color.DarkGoldenrod;
             labelmoney.Location = new Point(0, 0);
             labelmoney.Name = "labelmoney";
-            labelmoney.Size = new Size(115, 32);
+            labelmoney.Size = new Size(129, 38);
             labelmoney.TabIndex = 1;
             labelmoney.Text = "label1";
             // 
             // shopPanel
             // 
-            shopPanel.BackColor = Color.SaddleBrown;
+            shopPanel.BackColor = Color.CadetBlue;
             shopPanel.BorderStyle = BorderStyle.FixedSingle;
             shopPanel.FlowDirection = FlowDirection.TopDown;
             shopPanel.Location = new Point(10, 10);
@@ -83,10 +85,16 @@
             QuitButton.UseVisualStyleBackColor = true;
             QuitButton.Click += IObutton;
             // 
+            // timer1s
+            // 
+            timer1s.Interval = 1000;
+            timer1s.Tick += timer1s_Tick;
+            // 
             // Window
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(71, 88, 65);
             ClientSize = new Size(1139, 584);
             Controls.Add(QuitButton);
             Controls.Add(shopPanel);
@@ -107,10 +115,11 @@
 
         #endregion
 
-        private System.Windows.Forms.Timer moneyTimer;
+        private System.Windows.Forms.Timer scoretimer;
         private PictureBox pbBanana;
         private Label labelmoney;
         private FlowLayoutPanel shopPanel;
         private Button QuitButton;
+        private System.Windows.Forms.Timer timer1s;
     }
 }
